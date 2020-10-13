@@ -1,11 +1,11 @@
-Features of VS-CODE
+                           Features of VS-CODE
 1-Emmet syntax for HTML and CSS development
 2-Hover over CSS elements
 3-Use case of using a task
 4-Global find and replace, including regex search
 5-ESLint for JavaScript linting
-*****************************************************
-8 Useful plugins of vs code
+ *****************************************************
+                        8 Useful plugins of vs code
 1-Atom Keymap-can keep coding without learning a whole new workflow. 
 2-Auto Rename Tag-You could even run your code through various validators to try and figure out where you went wrong.
 3-Bracket Pair Colorizer-This extension colorizes brackets and gives visual cues that show you where one piece of your code starts and ends.
