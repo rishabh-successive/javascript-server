@@ -1,1 +1,1 @@
-# javascript-server
+day 2 - client and server
