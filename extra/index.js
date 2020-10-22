@@ -12,4 +12,4 @@ console.log("trainer have access to delete ")
 console.log (hasPermission(getUsers,"trainer","Delete"));
 
 console.log(validateUser(users));
-console.log("email you enter ")
+console.log("email you enter")

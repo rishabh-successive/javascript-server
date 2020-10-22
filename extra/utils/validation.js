@@ -21,15 +21,7 @@
           }
 
 
-        //ValidateUsers(users);
-        // console.log(`invalid ${invalid}`); // invalid email with count
-        //     console.log(`valid ${valid}`); // valid email with count
-
-        // for(var a=0;a<4;a++)
-        // {
-        //   console.log(a);
-        // }
-        // console.log(a);
+        
 
     
   

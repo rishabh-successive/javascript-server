@@ -8,6 +8,6 @@ export default function triangle(n) {
       for (var k = 1; k <= (2*i+1); k++) { 
         str = str + '*'; 
       } 
-      console.log(str); 
+      console.log( str); 
     } 
   }

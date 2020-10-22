@@ -34,4 +34,3 @@ export default function diamond(norow) {
 let norow;
 let i,j,k,l,str;
 console.log("Print a diamond with rows ", norow);
-// diamond(norow);
