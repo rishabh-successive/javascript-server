@@ -33,5 +33,7 @@ const  permissions = {
  }
  let {getUsers,getDetails}= permissions;
 
- console.log(hasPermission(getUsers,"trainer","Delete"));
- console.log(hasPermission(getUsers,"trainer","write"));
+ console.log(hasPermission(getUsers,"trainer","Delete")); // trainer dont have access to delete
+ console.log(hasPermission(getUsers,"trainee","write")); // trainee dont have access to write
+ console.log(hasPermission(getUsers,"trainer","read")); // trainer have access to read
+ console.log(hasPermission(getUsers,"trainee","write")); // trainee dont have access write

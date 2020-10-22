@@ -5,8 +5,8 @@ let users =
     reviewerEmail: 'reviewer1@successive.tech',
  },
   {
-    traineeEmail: 'trainee12successive.tech',
-    reviewerEmail: 'reviewer12@successive.tech',
+    traineeEmail: 'prince.gola@successive.tech',
+    reviewerEmail: 'reviewer.der@successive.tech',
  },
   {
     traineeEmail: 'trainee13@successive.tech',
@@ -17,13 +17,8 @@ let users =
 
     function validateEmail (email) 
     {
-      const reg = /^([\w-\.]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)([\w-]+\.)+[\w-]{2,4})?$/
-      if (reg.test(email)){
-        return true;
-      }
-      else{
-        return false;
-      }
+      const reg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ // email validation 
+      return (reg.test(email))
     } 
     
     /*function ValidateUsers (users){
@@ -36,18 +31,22 @@ let users =
      
      function ValidateUsers (users)
      {
-        let valid=0;
-        let invalid=0;
+         valid=0;
+         invalid=0;
             //console.log(users);
-            users.forEach(({traineeEmail , reviewerEmail})=>{if((validateEmail(traineeEmail))) {valid++} else invalid++});
-            
-            
-            console.log(`invalid ${invalid}`);
-            console.log(`valid ${valid}`);
+            users.forEach(({traineeEmail , reviewerEmail })=>
+            {
+              if(validateEmail(traineeEmail)&&validateEmail(reviewerEmail)) {
+                valid++
+              } else 
+              invalid++
+            }); 
           }
 
 
         ValidateUsers(users);
+        console.log(`invalid ${invalid}`); // invalid email with count
+            console.log(`valid ${valid}`); // valid email with count
 
         // for(var a=0;a<4;a++)
         // {
