@@ -1,3 +1,4 @@
+
 // const  permissions = {
 //     'getUsers': {
 //         all: ['head-trainer'],
@@ -10,6 +11,19 @@
 
 
  export default function hasPermission(moduleName,role,permissionType){
+const  permissions = {
+    'getUsers': {
+        all: ['head-trainer'],
+        read : ['trainee', 'trainer'],
+        write : ['trainer'],
+        Delete: [],
+        }
+    }
+
+
+
+ function hasPermission(moduleName,role,permissionType){
+
     const {all,read,write,Delete={}} = moduleName;
 
     let f = all.includes(role);
@@ -30,5 +44,15 @@
         }
     }
 
+
  } 
  
+
+ }
+ let {getUsers,getDetails}= permissions;
+
+ console.log(hasPermission(getUsers,"trainer","Delete")); // trainer dont have access to delete
+ console.log(hasPermission(getUsers,"trainee","write")); // trainee dont have access to write
+ console.log(hasPermission(getUsers,"trainer","read")); // trainer have access to read
+ console.log(hasPermission(getUsers,"trainee","write")); // trainee dont have access write
+
