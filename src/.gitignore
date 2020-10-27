@@ -4,7 +4,5 @@ MERN-STACK.md/
 12FACTOR-APP.md/
 CLIENT-SERVER.md/
 VS-CODE.md/
-package-lock.json
-.npmrc/
-package.json/
-/home/rishabh/Desktop/javascript-server/node_modules
+package-lock.json/
+home/rishabh/Desktop/javascript-server/node_modules/
