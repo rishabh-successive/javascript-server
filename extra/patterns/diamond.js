@@ -1,3 +1,4 @@
+
 let norow = process.argv[2]
 function diamond(norow) {
 if (norow <= 10 && norow >= 2) {
@@ -32,3 +33,4 @@ else console.log("wrong input");
 }
 console.log("Print a diamond with rows ", norow);
 diamond(norow);
+
