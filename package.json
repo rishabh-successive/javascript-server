@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "extra": "babel-node extra",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:extraTs": "tsc-watch --project . --onSuccess \"npm run nodemon\"",
+    "nodemon": "nodemon ./dist/index.js",
+    "lint": "./node_modules/tslint/bin/tslint -c tslint.json -p tsconfig.json --exclude 'node_modules/**/*.{j,t}s'",
+    "lint:fix": "npm run lint --fix"
   },
   "repository": {
     "type": "git",
@@ -17,10 +21,14 @@
     "url": "https://github.com/rishabh-successive/javascript-server/issues"
   },
   "homepage": "https://github.com/rishabh-successive/javascript-server#readme",
-  "dependencies": {},
+  "dependencies": {
+    "nodemon": "^2.0.6"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/node": "^7.12.1",
-    "@babel/preset-env": "^7.12.1"
+    "@babel/preset-env": "^7.12.1",
+    "typescript": "^4.0.3",
+    "tsc-watch": "^4.2.9"
   }
 }

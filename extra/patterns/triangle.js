@@ -1,5 +1,3 @@
-
-
 k = 0;
 let s=" ";
 let flag = 1;
