@@ -1,15 +1,15 @@
-import * as express from 'express';
-import * as bodyparser from 'body-parser';
-import { notFoundRoute, errorHandler } from './libs/routes';
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const bodyparser = require("body-parser");
+const routes_1 = require("./libs/routes");
 class Server {
-
-    private app: any;
-    constructor(private config) {
+    constructor(config) {
+        this.config = config;
         this.app = express();
     }
     bootstrap() {
-      this.initBodyParser();
+        this.initBodyParser();
         this.SetupRoutes();
         return this;
     }
@@ -17,13 +17,11 @@ class Server {
         this.app.use('/health-check', (req, res, next) => {
             res.send('i am ok');
         });
-        this.app.use(notFoundRoute);
-
-        this.app.use(errorHandler);
+        this.app.use(routes_1.notFoundRoute);
+        this.app.use(routes_1.errorHandler);
     }
-
-    public initBodyParser() {
-      this.app.use(bodyparser.json({ type: 'application/*+json' }));
+    initBodyParser() {
+        this.app.use(bodyparser.json({ type: 'application/*+json' }));
     }
     run() {
         // const {app, config: {PORT}} = this;
@@ -32,9 +30,9 @@ class Server {
                 console.log(err);
             }
             console.log(`App is running on port ${this.config.PORT}`);
-
         });
         return this;
     }
 }
-export default Server;
+exports.default = Server;
+//# sourceMappingURL=server.js.map

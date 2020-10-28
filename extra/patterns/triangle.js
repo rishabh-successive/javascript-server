@@ -1,10 +1,10 @@
-k = 0;
+let k = 0;
 let s=" ";
 let flag = 1;
 // rows=4;
-rows = parseInt(process.argv[2]);
+let rows = parseInt(process.argv[2]);
 // console.log(rows);
-for(i=1;i<=2*rows-1;i++){
+for(let i=1;i<=2*rows-1;i++){
 if(i<rows-k)
 process.stdout.write(" ");
 else{

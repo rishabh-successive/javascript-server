@@ -6,5 +6,4 @@ interface IConfig {
 
 
 
-
 export {IConfig};
