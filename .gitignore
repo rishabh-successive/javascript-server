@@ -7,5 +7,5 @@ VS-CODE.md
 package-lock.json
 .npmrc
 package.json
-
+dist
 
