@@ -1,16 +1,15 @@
-import dotenv = require ('dotenv');
-
-const enVars = dotenv.config(); // .config method
-
-
-
-
-
-
-
+import { IConfig} from './IConfig';
+let  enVars = require('dotenv').config()
 console.log('Inside config', enVars);
 
-const config =enVars; // config variable
+// console.log(`real config is` ,enVars.parsed);
+const config = enVars.parsed;
+export default config;
 Object.freeze(config);
 
-export default config;
+
+
+
+
+
+
