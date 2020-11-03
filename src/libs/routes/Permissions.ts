@@ -1,4 +1,5 @@
- export default function hasPermission(moduleName ,role,permissionType){
+
+export default function hasPermission(moduleName ,role,permissionType){
     
     const {all,read,write,Delete={}} = moduleName;
 
