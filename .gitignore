@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 extra/
 MERN-STACK.md
 12FACTOR-APP.md
@@ -7,4 +7,4 @@ VS-CODE.md
 package-lock.json
 .npmrc
 package.json
-dist/
+dist
