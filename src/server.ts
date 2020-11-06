@@ -30,7 +30,7 @@ class Server {
       this.app.use(bodyparser.json({ type: 'application/*+json' }));
     }
     run() {
-        const { app, config:{PORT, MONGO_URL}} = this;
+        const { app, config:{PORT,  mongo: MONGO_URL}} = this;
         //console.log("url for mongo is",MONGO_URL);
         Database.open('mongodb://localhost:27017/express-training')
         .then((res) => {
