@@ -1,28 +1,33 @@
 import * as jwt from 'jsonwebtoken';
-import hasPermission from './Permissions';
-export default (module,permissionType)=> (req,res,next)=> {
-    try{
-        console.log("The config is ",module,permissionType);
+import { Request, Response, NextFunction } from 'express';
 
-    console.log("Header is ",req.headers['authorization'])
-    const token = req.headers['authorization']
-    const decodedUser = jwt.verify(token,'qwertyuiopasdfghjklzxcvbnm123456')
-        console.log('User',decodedUser);
-        const result =hasPermission(module,decodedUser.role,permissionType);
-        if(result)
-            next(); 
-        else{
-            next({
-                error:"Unauthorized",
-                code: 403
-            })
-        }
-    } catch(err){
-        next({
-            error:"Unauthorized",
-            code: 403
-        })
-    }
-    
-    
-}
+import hasPermission from '../routes/Permissions';
+import IRequest from '../../../src/Irequest';
+
+
+export default (module, permissionType) => (req: IRequest, res: Response, next: NextFunction) => {
+    try {
+        const token = req.headers.authorization;
+       const secretKey  = 'qwertyuiopasdfghjklzxcvbnm123456';
+       const decodeUser = jwt.verify(token, secretKey);
+       //console.log(decodeUser)
+       req.userDataToken = decodeUser ;
+        console.log(req.userDataToken)
+      // console.log(module,permissionType)
+       // console.log('decoded user properties are ',decodeUser);
+       const valOfPermission =  hasPermission(module , decodeUser.docs.role , permissionType);
+       if (valOfPermission) {
+        // res.send('Prop Verified');
+           next();
+       }
+
+
+   } catch (err) {
+       next({
+           error : 403,
+           message: 'Unauthorised Access'
+       });
+       
+   }
+
+};   
