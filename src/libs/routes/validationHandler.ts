@@ -35,7 +35,6 @@ export default ( config ) => ( req: Request, res: Response, next: NextFunction  
                     status: 404
                 });
             }
-        }
         if (obj.string) {
             if ( ! ( typeof ( values ) === 'string' ) ) {
                 errors.push({
@@ -69,6 +68,7 @@ export default ( config ) => ( req: Request, res: Response, next: NextFunction  
                 });
             }
         }
+    }
     });
     if (errors.length > 0) {
         res.status(400).send({ errors});
