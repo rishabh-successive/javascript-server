@@ -13,10 +13,12 @@ export default () => {
                     password: 'training@123'
                 });
                 userRepository.create({
+                    id: 11,
                     name: 'trainer',
                     email: 'trainer@successivetech',
                     role: 'trainer',
                     password: 'training@123'
+                    
                 });
             }
         })

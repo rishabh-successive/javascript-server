@@ -6,7 +6,7 @@ triangle(5);
 
 import {hasPermission,validateUser} from "./utils"
 
-import {getUsers,getDetails,users} from "./constants"
+import {getUsers,getDetails,users} from "./utils/constants"
 
 console.log("trainer have access to delete ")
 console.log (hasPermission(getUsers,"trainer","Delete"));

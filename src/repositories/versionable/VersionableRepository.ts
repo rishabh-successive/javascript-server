@@ -2,6 +2,12 @@ import * as mongoose from 'mongoose';
 import { DocumentQuery , Query } from 'mongoose';
 
 export default class VersionableRepository<D extends mongoose.Document, M extends mongoose.Model<D>> {
+    update(data: any) {
+        throw new Error('Method not implemented.');
+    }
+    createUser(data: any) {
+        throw new Error('Method not implemented.');
+    }
     private model: M;
     constructor(model) {
         this.model = model;
@@ -18,36 +24,45 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
         return this.model.findOne(query).lean();
     }
 
-    public createUser(options: any): Promise<D> {
-        const id = VersionableRepository.generateObjectId();
-        const model = new this.model({
-            ...options,
-            _id: id,
-            orignalId: id,
-        });
-        return model.save();
-    }
-    // public invalidate(id: any): DocumentQuery<D, D> {
-    //     return this.model.update({ originalId: id, deletedAt: null}, { deletedAt: Date.now() });
-    // }
-
-//    public update(data: any) : Promise<D> {
-//        console.log('Looking for Previous valid document');
-//        const prev = this.findOne({ originalId: data.originalId,deletedAt: null});
-//        console.log("Prev : ", prev);
-
-//        if(prev) {
-//            this.invalidate(data.originalId);
-//        } else {
-//            return null;
-//        }
-//        console.log('Data : ',data);
-//        const newData = Object.assign(JSON.parse(JSON.stringify(prev)), data);
-//        console.log('New data : ',newData);
-//        newData._id = VersionableRepository.generateObjectId();
-//    }
-
     public getUser(data: any) {
         return this.model.findOne(data);
+    }
+
+    public create(data: any): Promise<D>{
+        const id = VersionableRepository.generateObjectId();
+        const model = new this.model({
+            ...data,
+            _id: id,
+            originalId: id
+        });
+        return  model.save();
+    }
+
+   public delete(id: any) {
+       return new Promise((resolve, reject) => {
+           let originalData;
+
+           this.findOne({ _id: id, deletedAt: null}).lean()
+           .then((data) => {
+                console.log('data: ',data)
+                if (data === null) {
+                    throw '';
+                }
+
+                originalData = data;
+                const oldId = originalData._id;
+
+                const modelDelete = {
+                    ...originalData,
+                    deletedAt: Date.now()
+                };
+
+                this.model.updateOne({ _id: oldId}, modelDelete);
+                resolve(undefined)
+           })
+           .catch((err) => {
+                reject(err);
+           });
+       });
     }
 }
