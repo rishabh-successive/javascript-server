@@ -15,10 +15,10 @@ UserRouter.route('/')
 .post(authMoiddleWare(getUsers, 'read'), validationHandler(validation.create), UserController.create );
 
 UserRouter.route('/')
-.put(authMoiddleWare(getUsers, 'read'),   UserController.update );
+.put(authMoiddleWare(getUsers, 'read'), validationHandler(validation.update), UserController.update );
 
 UserRouter.route('/me')
-.get(authMoiddleWare(getUsers, 'all'), UserController.me);
+.get(authMoiddleWare(getUsers, 'all'),validationHandler(validation.get), UserController.me);
 
 UserRouter.route('/login')
 .post(validationHandler( validation.login ), UserController.login);
