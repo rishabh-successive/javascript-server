@@ -28,7 +28,7 @@ export default (module, permissionType) => (req: IRequest, res: Response, next: 
             }
             else{
                 req.query= decodeUser.id;
-                req.userData = userData;
+                req.userDataToken = userData;
                 next();
             }
         })

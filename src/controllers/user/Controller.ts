@@ -1,68 +1,77 @@
 import * as jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { userModel } from '../../repositories/user/UserModel'
-import IRequest  from '../../../src/Irequest';
-import  userRepository  from '../../repositories/user/UserRepository';
 
+import UserRepository from '../../repositories/user/UserRepository';
+import { config } from '../../config';
+import IRequest from '../../Irequest';
 
-const user = new userRepository();
 class UserController {
-    static instance: UserController;
 
-    static getInstance() {
-        if (UserController.instance) {
-            return UserController.instance;
-        }
-        UserController.instance = new UserController();
-        return UserController.instance;
-    }
+    public async me(req: IRequest, res: Response, next: NextFunction) {
+        const id = req.query;
+        const user = new UserRepository();
 
-    
-
-    public login(req: IRequest, res: Response, next: NextFunction) {
-
-        const { email, password } = req.body;
-        console.log('Inside Login Controller');
-        // console.log('Email is: ',email,'Password is :', password);
-       // console.log(userModel);
-        user.getUser({ email })
-            .then((userData) => {
-                {
-                    if (!userData) {
-                       next({ err: 'Not Found', status: 404, message: 'Route Not Found' });
-                    }
-                    const secretKey  = 'qwertyuiopasdfghjklzxcvbnm123456';
-                    const createToken = jwt.sign(userData.toJSON(), secretKey);
-                    // console.log(createToken);
-                    res.send(createToken);
-                    req.userDataToken = createToken;
-                    // console.log(req.userDataToken);
-                }
+        await user.getUser({ id })
+            .then((data) => {
+                res.status(200).send({
+                    message: 'User Fetched successfully',
+                    'data': { data },
+                    code: 200
+                });
             });
     }
-   public me(req: IRequest, res: Response, next: NextFunction) {
-        const data = req.userDataToken;
-        console.log(data);
 
-        res.json(data);
-        // next();
+    public async create(req: IRequest, res: Response, next: NextFunction) {
+        const {  email, name, role, password } = req.body;
+        const creator = req.userDataToken._id;
+
+        const user = new UserRepository();
+        await user.createUser({ email, name, role, password }, creator)
+            .then(() => {
+                console.log("body is", req.body);
+                res.send({
+                    message: 'User Created Successfully!',
+                    data: {
+                        'name': name,
+                        'email': email,
+                        'role': role,
+                        'password': password
+                    },
+                    code: 200
+                });
+            });
     }
 
-   public create (req: Request, res: Response) {
-        const { id, name } = req.body;
-        user.create({ id, name })
-            .then((data) => {
-                res.status(200).send(`User Created ${data}`);
-            })
-   }
-
-   public delete(req: IRequest, res: Response, next: NextFunction) {
-        const id = req.params.id;
-        console.log('step1');
-        user.delete(id)
+    public async update(req: IRequest, res: Response, next: NextFunction) {
+        const { id, dataToUpdate } = req.body;
+        const updator = req.userDataToken._id;
+        console.log('id',id);
+        console.log('dataToUpdate',dataToUpdate);
+        
+        const user = new UserRepository();
+        await user.updateUser( id, dataToUpdate, updator)
         .then((result) => {
             res.send({
-                message: 'Deleted Successfully',
+                message: 'User Updated',
+                code: 200
+            });
+        })
+        .catch ((err) => {
+            res.send({
+                error: 'User Not Found for update',
+                code: 404
+            });
+        });
+    }
+
+    public async remove(req: IRequest, res: Response, next: NextFunction) {
+        const  id  = req.params.id;
+        const remover = req.userDataToken._id;
+        const user = new UserRepository();
+        await user.deleteData(id, remover)
+        .then((result) => {
+            res.send({
+                message: 'Deleted successfully',
                 code: 200
             });
         })
@@ -72,25 +81,44 @@ class UserController {
                 code: 404
             });
         });
-   }
-    update(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside put method of Trainee');
-            res.send({
-                message: 'Trainee updated succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
     }
-   
+
+    public async login(req: IRequest, res: Response, next: NextFunction) {
+        const { email } = req.body;
+
+        const user = new UserRepository();
+
+        await user.getUser({ email })
+            .then((userData) => {
+                if (userData === null) {
+                    res.status(404).send({
+                        err: 'User Not Found',
+                        code: 404
+                    });
+                    return;
+                }
+
+                const { password } = userData;
+
+                if (password !== req.body.password) {
+                    res.status(401).send({
+                        err: 'Invalid Password',
+                        code: 401
+                    });
+                    return;
+                }
+
+                const token = jwt.sign(userData.toJSON(), config.KEY);
+                res.send({
+                    message: 'Login Successfull',
+                    status: 200,
+                    'token': token
+                });
+                return;
+
+            });
+    }
+
 }
 
-export default UserController.getInstance();
+export default new UserController();

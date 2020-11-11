@@ -15,6 +15,24 @@ const config = {
       in: ['body'],
       errorMessage: 'Name is required',
   },
+  email: {	
+      required: true,
+      regex: '',
+      in: ['body'],
+      errorMessage: 'Name is required',
+  },
+  password: {	
+      required: true,
+      regex: '',
+      in: ['body'],
+      errorMessage: 'Name is required',
+  },
+  role: {	
+      required: true,
+      regex: '',
+      in: ['body'],
+      errorMessage: 'Name is required',
+  }
 },
 delete: {
   id: { required: true,
