@@ -12,8 +12,10 @@ export default ( config ) => ( req: Request, res: Response, next: NextFunction  
         const obj = config[key];
         console.log('key is' , key);
         const values = obj.in.map( ( val ) => {
-            // console.log( 'val',val ); 
-            // console.log( 'key', key );
+            console.log( 'val',val ); 
+            console.log( 'key', key );
+            console.log(req.body.email);
+            console.log(req[ val ][ key ]);
             return req[ val ][ key ];
         });
 
@@ -37,7 +39,7 @@ export default ( config ) => ( req: Request, res: Response, next: NextFunction  
             }
         }
         if (obj.string) {
-            if ( ! ( typeof ( values ) === 'string' ) ) {
+            if ( ! ( typeof ( values[0] ) === 'string' ) ) {
                 errors.push({
                     message: `${key} Should be a String`,
                     status: 404
