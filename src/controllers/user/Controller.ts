@@ -1,132 +1,124 @@
 import * as jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { userModel } from '../../repositories/user/UserModel'
-import IRequest  from '../../../src/Irequest';
+
+import UserRepository from '../../repositories/user/UserRepository';
+import { config } from '../../config';
+import IRequest from '../../Irequest';
 
 class UserController {
-    static instance: UserController;
 
-    static getInstance() {
-        if (UserController.instance) {
-            return UserController.instance;
-        }
-        UserController.instance = new UserController();
-        return UserController.instance;
+    public async me(req: IRequest, res: Response, next: NextFunction) {
+        const id = req.query;
+        const user = new UserRepository();
+
+        await user.getUser({ id })
+            .then((data) => {
+                res.status(200).send({
+                    message: 'User Fetched successfully',
+                    'data': { data },
+                    code: 200
+                });
+            });
     }
 
-    login(req: IRequest, res: Response, next: NextFunction) {
+    public async create(req: IRequest, res: Response, next: NextFunction) {
+        const {  email, name, role, password } = req.body;
+        const creator = req.userDataToken._id;
 
-        const { email , password } = req.body;
-        // console.log('Email is: ',email,'Password is :', password);
-       // console.log(userModel);
-        userModel.findOne({ email: email }, (err, docs) => {
-            if (docs) {
-                if ( password === docs.password) { 
-                   const token = jwt.sign({docs},'qwertyuiopasdfghjklzxcvbnm123456');
-                    res.send({
-                        data: token,
-                        message: 'LoggedIN',
-                        status: 200
-                    })
-                }
-                 else {
-                    res.send({
-                        status: 404,
-                        message: 'Password not exists in DB'
-
-                   });
-                } 
-            }
-            else {
+        const user = new UserRepository();
+        await user.createUser({ email, name, role, password }, creator)
+            .then(() => {
+                console.log("body is", req.body);
                 res.send({
-                    status: 404,
-                    message: 'Email Not Exist in DB'
+                    message: 'User Created Successfully!',
+                    data: {
+                        'name': name,
+                        'email': email,
+                        'role': role,
+                        'password': password
+                    },
+                    code: 200
                 });
-            };
-            const secretKey  = 'qwertyuiopasdfghjklzxcvbnm123456';
-            const createToken = jwt.sign({ docs }, secretKey);
-            //console.log(createToken);
-            res.send(createToken);
-            req.userDataToken = createToken;
-            console.log(req.userDataToken);
+            });
+    }
+
+    public async update(req: IRequest, res: Response, next: NextFunction) {
+        const { id, dataToUpdate } = req.body;
+        const updator = req.userDataToken._id;
+        console.log('id',id);
+        console.log('dataToUpdate',dataToUpdate);
+        
+        const user = new UserRepository();
+        await user.updateUser( id, dataToUpdate, updator)
+        .then((result) => {
+            res.send({
+                message: 'User Updated',
+                code: 200
+            });
+        })
+        .catch ((err) => {
+            res.send({
+                error: 'User Not Found for update',
+                code: 404
+            });
         });
     }
-    me(req: IRequest, res: Response, next: NextFunction) {
-        const data=req.userDataToken;
-        console.log(data);
 
-        res.json(data);
-        // next();
-    }
-
-    get(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside get method of User');
+    public async remove(req: IRequest, res: Response, next: NextFunction) {
+        const  id  = req.params.id;
+        const remover = req.userDataToken._id;
+        const user = new UserRepository();
+        await user.deleteData(id, remover)
+        .then((result) => {
             res.send({
-                message: 'User fetched succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
+                message: 'Deleted successfully',
+                code: 200
             });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-    create(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside post method of Trainee');
+        })
+        .catch ((err) => {
             res.send({
-                message: 'User created succefully',
-                data: [{
-                    name: 'user1',
-
-                },
-                {
-                    name: 'user2',
-                }]
+                message: 'User not found to be deleted',
+                code: 404
             });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
+        });
     }
-    update(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside put method of Trainee');
-            res.send({
-                message: 'Trainee updated succefully',
-                data: [{
-                    name: 'user1',
 
-                },
-                {
-                    name: 'user2',
-                }]
-            });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
-    }
-    delete(req: Request, res: Response, next: NextFunction) {
-        try {
-            console.log('Inside delete method of Trainee');
-            res.send({
-                message: 'Trainee deleted succefully',
-                data: [{
-                    name: 'user1',
+    public async login(req: IRequest, res: Response, next: NextFunction) {
+        const { email } = req.body;
 
-                },
-                {
-                    name: 'user2',
-                }]
+        const user = new UserRepository();
+
+        await user.getUser({ email })
+            .then((userData) => {
+                if (userData === null) {
+                    res.status(404).send({
+                        err: 'User Not Found',
+                        code: 404
+                    });
+                    return;
+                }
+
+                const { password } = userData;
+
+                if (password !== req.body.password) {
+                    res.status(401).send({
+                        err: 'Invalid Password',
+                        code: 401
+                    });
+                    return;
+                }
+
+                const token = jwt.sign(userData.toJSON(), config.KEY);
+                res.send({
+                    message: 'Login Successfull',
+                    status: 200,
+                    'token': token
+                });
+                return;
+
             });
-        } catch (err) {
-            console.log('Inside err', err);
-        }
     }
+
 }
 
-export default UserController.getInstance();
+export default new UserController();

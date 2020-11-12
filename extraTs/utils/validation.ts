@@ -1,5 +1,5 @@
 
-     import {IUsers} from '../interfaces';
+     import {IUsers} from '../utils/interfaces';
      import validateEmail from './helpers.js'
      export default function ValidateUsers (users : IUsers[])
      {
