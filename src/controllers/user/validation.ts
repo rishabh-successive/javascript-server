@@ -37,19 +37,19 @@ const config = {
   },
 
   get: {
-      skip: {
-          required: false,
-          default: 0,
-          number: true,
+      email: {
+          required: true,
+          
+          
           in: ['query'],
-          errorMessage: 'Skip is invalid'
+          errorMessage: 'email is invalid'
       },
-      limit: {
-          required: false,
-          default: 10,
-          number: true,
+      password: {
+          required: true,
+    
+          
           in: ['query'],
-          errorMessage: 'Limit is invalid'
+          errorMessage: 'password is invalid'
       }
   },
 
