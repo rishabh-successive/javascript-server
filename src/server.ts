@@ -3,6 +3,8 @@ import * as bodyparser from 'body-parser';
 import { notFoundRoute, errorHandler } from './libs/routes';
 import mainRouter from './router';
 import { Database }from './libs';
+import * as swaggerUi from 'swagger-ui-express';
+import * as swaggerDoc from './swagger.json';
 class Server {
 
      app: any;
@@ -20,6 +22,8 @@ class Server {
         });
 
         this.app.use('/api',mainRouter);
+
+        this.app.use('/swagger',swaggerUi.serve,swaggerUi.setup(swaggerDoc));
 
         this.app.use(notFoundRoute);
 

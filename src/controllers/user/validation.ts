@@ -1,17 +1,6 @@
 const config = {
   create: {
-      id: {
-          required: true,
-          string: true,
-          in: ['body'],
-          custom: (value) => {
-              console.log('Value', value);
-              throw {
-                  error: 'Error Occured',
-                  message: 'Message'
-              };
-          }
-      },
+     
       name: {
           required: true,
           regex: '',
@@ -48,17 +37,17 @@ const config = {
   },
 
   get: {
-      skip: {
-          required: false,
-          default: 0,
-          number: true,
+      email: {
+          required: true,
+          
+          
           in: ['query'],
-          errorMessage: 'Skip is invalid'
+          errorMessage: 'email is invalid'
       },
-      limit: {
-          required: false,
-          default: 10,
-          number: true,
+      password: {
+          required: true,
+    
+          
           in: ['query'],
           errorMessage: 'Limit is invalid'
       },
