@@ -29,7 +29,7 @@ const  permissions : IPermissions= {
    },
 
     {
-      traineeEmail: 'rishabh.yadav@successive.tech',
+      traineeEmail: 'rishabh.y@successive.tech',
       reviewerEmail: 'reviewer.der@successive.tech',
    },
 
