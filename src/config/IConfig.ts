@@ -4,7 +4,8 @@ interface IConfig {
     KEY: any;
     PORT : number;
     NODE_ENV: string;
-    MONGO_URL: Url
+    MONGO_URL: Url;
+    password: string;
 
 }
 

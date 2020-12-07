@@ -6,45 +6,34 @@ import IRequest from '../../../src/Irequest';
 
 
 import UserRepository from '../../repositories/user/UserRepository';
+import { config } from 'config';
 
 
 export default (module, permissionType) => (req: IRequest, res: Response, next: NextFunction) => {
-    try {
-        console.log('Inside AuthMiddleware');
-        const token = req.headers.authorization;
-       const secretKey  = 'qwertyuiopasdfghjklzxcvbnm123456';
-       const decodeUser = jwt.verify(token, secretKey);
-       const userRepository = new UserRepository();
-       userRepository.findOne({ id: decodeUser.id })
-        .then((userData) => {
-            if(!userData) {
-                throw 'User Not Found';
-            }
-            else if (!hasPermission(module , decodeUser.docs.role , permissionType)) {
-                res.status(400).send({
-                    message: 'Unauthorised Access',
-                    status: 400,
-                });
-            }
-            else{
-                req.query= decodeUser.id;
-                req.userDataToken = userData;
-                next();
-            }
-        })
-        .catch((err) => {
+    console.log('Inside AuthMiddleware');
+    const token = req.headers.authorization;
+    const key = "qwertyuiopasdfghjklzxcvbnm123456";
+   const decodeUser = jwt.verify(token, key);
+   console.log(decodeUser.role);
+   const userRepository = new UserRepository();
+   userRepository.findOne({ _id: decodeUser._id })
+    .then((userData) => {
+        if (!userData) {
             next({
-                error: 'user is not found',
-                code: 400
+                error: 'Unauthorized Access',
+                message: 'User not match',
+              });
+        }
+        else if (!hasPermission(module , decodeUser.role , permissionType)) {
+            res.status(400).json({
+                message: `${permissionType} Permission is not allowed.`,
             });
-        });
-    }
-
-    catch(err) {
-        next({
-            error : 403,
-            message: 'Unauthorised Access'
-        });
-        
-    }
- }  
+        }
+        else {
+            //req.query = decodeUser._id;
+           req.userData = decodeUser;
+            next();
+        }
+    });
+    
+};
