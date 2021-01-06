@@ -14,7 +14,7 @@ export default () => {
                 const hashedPassword = bcrypt.hashSync(rawPassword, salt);
                 userRepository.createUser({
                     name: 'head-trainer',
-                    email: 'headtrainer@successivetech',
+                    email: 'headtrainer@successive.tech',
                     role: 'head-trainer',
                     password: hashedPassword
                 },"rishabh");
