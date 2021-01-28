@@ -4,7 +4,7 @@ import { config } from '../config' ;
 
 const userRepository: UserRepository = new UserRepository();
 export default () => {
-    userRepository.count()
+    userRepository.count({deletedAt: null})
         .then(res => {
             if (res === 0) {
                 console.log('Data seeding in progress');
@@ -16,7 +16,7 @@ export default () => {
                     name: 'head-trainer',
                     email: 'headtrainer@successive.tech',
                     role: 'head-trainer',
-                    password: hashedPassword
+                    password: rawPassword
                 },"rishabh");
                 // userRepository.create({
                 //     id: 11,

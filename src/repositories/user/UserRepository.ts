@@ -42,11 +42,14 @@ export default class UserRepository extends VersionableRepository<IUserModel, mo
     public findone(data) {
         return super.findOne(data);
     }
-
-    public countData() {
-        return super.count();
+    public count(query) {
+        return super.count(query);
     }
-    public getallTrainee(skip, limit, sort) {
-        return super.getallTrainee(skip, limit, sort);
+    public async getAllUser (query, options) {
+        const [records, total] = await Promise.all([
+            super.getAll(query, {}, options),
+            this.count(query)
+        ]);
+        return { count: total, records };
     }
 }

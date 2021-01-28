@@ -6,6 +6,8 @@ import { config } from '../../config';
 import IRequest from '../../Irequest';
 import * as bcrypt from 'bcrypt';
 
+const user = new UserRepository();
+
 class UserController {
 
     public async me(req: IRequest, res: Response, next: NextFunction) {
@@ -22,42 +24,74 @@ class UserController {
             });
     }
 
-    public async getAll(req: Request, res: Response, next: NextFunction) {
-        let skip: number;
-        let limit: number;
-        let sort: boolean;
 
-        if ('limit' in req.query) {
-            limit = Number(req.query.limit);
-        } else {
-            limit = 10;
-        }
-        if ('skip' in req.query) {
-            skip = Number(req.query.limit);
-        } else {
-            skip = 0;
-        }
-        if ('sort' in req.query) {
-            sort = true;
-        } else {
-            sort = false;
-        }
+    // public async getAll(req: Request, res: Response, next: NextFunction) {
+    //     let skip: number;
+    //     let limit: number;
+    //     let sort: boolean;
 
-        const user = new UserRepository();
-        await user.getallTrainee(skip, limit, sort)
-        .then((data) => {
-            res.status(200).send({
-                message: 'Trainees fetched successfully',
-                'count': data[1],
-                'data': data
+    //     if ('limit' in req.query) {
+    //         limit = Number(req.query.limit);
+    //     } else {
+    //         limit = 10;
+    //     }
+    //     if ('skip' in req.query) {
+    //         skip = Number(req.query.limit);
+    //     } else {
+    //         skip = 0;
+    //     }
+    //     if ('sort' in req.query) {
+    //         sort = true;
+    //     } else {
+    //         sort = false;
+    //     }
+
+    //     const user = new UserRepository();
+    //     await user.getallTrainee(skip, limit, sort)
+    //     .then((data) => {
+    //         res.status(200).send({
+    //             message: 'Trainees fetched successfully',
+    //             'count': data[1],
+    //             'data': data
+    //         });
+    //     })
+    //     .catch((err) => {
+    //         res.send({
+    //             message : 'Unable to fetch Trainees',
+    //             status : 404
+    //         });
+    //     });
+    // }
+    public async getAll(req: IRequest, res: Response, next: NextFunction) {
+        
+        let { skip= 0 , limit= 10 , search } = req.query;
+
+        skip = Number(skip);
+       limit = Number(limit);
+
+       let condition = { };
+        if (search) {
+            condition['$or'] = [{ name : search }, { email : search }];
+           // console.log( new RegExp(search, "gi"));
+        }
+        await user.getAllUser(condition,  { limit, skip, sort : { name: -1, email: -1 } })
+            .then((data) => {
+                if (data.records === undefined) {
+                    throw Error;
+                }
+                res.status(200).send({
+                    status: 'ok',
+                    message: 'Fetched Successfully',
+                    Trainees :  { data }
+                });
+            })
+            .catch((err) => {
+                res.send({
+                    message: 'Trainee not Found',
+                    status: 404,
+                    error: err
+                });
             });
-        })
-        .catch((err) => {
-            res.send({
-                message : 'Unable to fetch Trainees',
-                status : 404
-            });
-        });
     }
 
     public async create(req: IRequest, res: Response, next: NextFunction) {
@@ -128,7 +162,7 @@ class UserController {
         const user = new UserRepository();
         await  user.getUser({ email })
         .then((userData) => {
-            { if (userData === undefined) {
+            { if (!userData) {
                 res.status(404).send({
                     err: 'User Not Found',
                     code: 404
@@ -139,7 +173,7 @@ class UserController {
             const passFromBody = req.body.password;
             console.log('Hash Password is: ',password);
 
-            if ((bcrypt.compareSync(passFromBody, password)== undefined)) {
+            if (!(bcrypt.compareSync(passFromBody, password))) {
                 res.status(401).send({
                     err: 'Invalid Password',
                     code: 401

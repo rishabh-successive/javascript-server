@@ -14,8 +14,8 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
         return String(mongoose.Types.ObjectId());
     }
 
-    public async count() {
-        return await this.model.countDocuments();
+    public async count(query: object) {
+        return await this.model.countDocuments({deletedAt: undefined, ...query});
     }
 
     public async findOne(query: object) {
@@ -39,28 +39,36 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
         return await this.model.findOne(data);
     }
 
-    public async getallTrainee(skipDefined: number, limitDefined: number, sort: boolean) {
-        if ( sort ) {
-        const fetchData = await this.model.find( { deletedAt : null})
-        .skip(skipDefined)
-        .limit(limitDefined)
-        .sort({name: 1, email: 1});
-        const count = await this.model.find( {deletedAt: null})
-        .countDocuments();
+    // public async getallTrainee(skipDefined: number, limitDefined: number, sort: boolean) {
+    //     if ( sort ) {
+    //     const fetchData = await this.model.find( { deletedAt : null})
+    //     .skip(skipDefined)
+    //     .limit(limitDefined)
+    //     .sort({name: 1, email: 1});
+    //     const count = await this.model.find( {deletedAt: null})
+    //     .countDocuments();
 
-        const arr = [fetchData, count];
-        return arr;
-        } else {
-            const fetchData = await this.model.find({deletedAt: null})
-            .skip(skipDefined)
-            .limit(limitDefined)
-            .sort({createdAt: -1});
-            const count = await this.model.find({deletedAt: null})
-            .countDocuments();
-            const arr = [fetchData, count];
-            return arr;
-        }
-        }
+    //     const arr = [fetchData, count];
+    //     return arr;
+    //     } else {
+    //         const fetchData = await this.model.find({deletedAt: null})
+    //         .skip(skipDefined)
+    //         .limit(limitDefined)
+    //         .sort({createdAt: -1});
+    //         const count = await this.model.find({deletedAt: null})
+    //         .countDocuments();
+    //         const arr = [fetchData, count];
+    //         return arr;
+    //     }
+    //     }
+    public getAll(query: any = {}, projection: any = {}, options: any = {}) {
+
+        const finalQuery = { deletedAt: undefined, ...query };
+
+         const { limit = 0, skip = 0, ...restOption } = options;
+
+        return this.model.find(finalQuery, projection, restOption).skip(skip).limit(limit);
+    }
 
     public async update(id: string, dataToUpdate: any, updator) {
 
@@ -93,7 +101,7 @@ export default class VersionableRepository<D extends mongoose.Document, M extend
                         }
                     });
 
-                this.model.create(newData);
+               return this.model.create(newData);
 
 
             });

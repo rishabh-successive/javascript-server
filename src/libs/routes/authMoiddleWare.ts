@@ -6,15 +6,15 @@ import IRequest from '../../../src/Irequest';
 
 
 import UserRepository from '../../repositories/user/UserRepository';
-import { config } from 'config';
 
 
 export default (module, permissionType) => (req: IRequest, res: Response, next: NextFunction) => {
     console.log('Inside AuthMiddleware');
     const token = req.headers.authorization;
+    console.log('token', req.headers.authorization);
     const key = "qwertyuiopasdfghjklzxcvbnm123456";
    const decodeUser = jwt.verify(token, key);
-   console.log(decodeUser.role);
+   console.log('decodedUser', decodeUser);
    const userRepository = new UserRepository();
    userRepository.findOne({ _id: decodeUser._id })
     .then((userData) => {
@@ -31,7 +31,7 @@ export default (module, permissionType) => (req: IRequest, res: Response, next: 
         }
         else {
             //req.query = decodeUser._id;
-           req.userData = decodeUser;
+           req.userData = userData;
             next();
         }
     });

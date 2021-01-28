@@ -1,88 +1,87 @@
-import { NextFunction, Request, Response } from 'express';
-// import { isNullOrUndefined } from 'util';
+import { Request, Response, NextFunction } from 'express';
 
-export default ( config ) => ( req: Request, res: Response, next: NextFunction  ) => {
-    const errors = [];
-    console.log( 'Inside ValidationHandler Middleware' );
-    console.log( req.body );
-    // console.log( req.query );
-    // console.log(Object.keys( req.query ).length );
-    const keys = Object.keys( config );
-    keys.forEach((key) => {
-        const obj = config[key];
-        console.log('key is' , key);
-        const values = obj.in.map( ( val ) => {
-            console.log( 'val',val ); 
-            console.log( 'key', key );
-            console.log(req.body.email);
-            console.log(req[ val ][ key ]);
-            return req[ val ][ key ];
-        });
+export default (config: object) => (req: Request, res: Response, next: NextFunction): void => {
+    const { body: propFromBody, params: propFromParams, query: propFromQuery }: any = req;
+// const { body: propFromBody, query: propFromQuery } = req
+   // const propFromBody: any = req.body; // savind value from body
+   // const propFromParams: any = req.params; // saving value from Params
+   // const propFromQuery: any = req.query; // Saving value from Query
+    const errorsArray: any = [];    // Adding errors together
+    const validationKeys: any = Object.keys(config); // getting keys from request recieved
 
-        // Checking for In i.e Body or Query
-        if (isNull(req[obj.in])) {
-            errors.push({
-                message: `Values should be passed through ${obj.in}`,
-                status: 400
-            });
-        }
+    console.log(req.body);
+    validationKeys.forEach(validateKey => {
+        const propOfKey = config[ validateKey ]; // Adding keys
+        let requireFlag = false;    // Flag to check required condition
 
-        // Checking for required
-        console.log('values is' , values);
-        // console.log( 'values exist' , isNull( values ) );
-        if (obj.required) {
-            if (isNull(values)) {
-                errors.push({
-                    message: `${key} is required`,
-                    status: 404
-                });
+    const errorchecker = ( valRuleError: any , valKeyError: any) => {
+         if (Object.keys(valRuleError).includes('errorMessage') || Object.keys(valRuleError).includes('in')) {
+                errorsArray.push( `key : ${validateKey}`, `location : ${ valRuleError.in } `, `errorMessage : ${valRuleError.errorMessage}`);
             }
-        if (obj.string) {
-            if ( ! ( typeof ( values[0] ) === 'string' ) ) {
-                errors.push({
-                    message: `${key} Should be a String`,
-                    status: 404
-                });
+         else if ( Object.values(valRuleError).includes('custom')) {
+                errorsArray.push(`Custom Error Message is : ${valRuleError.custom(valKeyError)}`);
             }
-        }
-        if (obj.isObject) {
-            if ( ! ( typeof ( values ) === 'object' ) ) {
-                errors.push({
-                    message: `${key} Should be an object`,
-                    status: 404
-                });
+         else {
+                errorsArray.push('error is occured');
             }
-        }
-        if (obj.regex) {
-            const regex = obj.regex;
-            if (!regex.test(values[0])) {
-                errors.push({
-                    message: `${key} is not valid expression` ,
-                    status: 400,
-                });
-            }
-        }
-        if (obj.number) {
-            if (isNaN(values[0]) || values[0] === '' || values[0] === undefined) {
-                errors.push({
-                    message: `${key}  must be an number` ,
-                    status: 400,
-                });
-            }
-        }
+            };
+
+    if (Object.keys(propOfKey).includes('in')) {
+        if (
+             (propOfKey.in.includes('body') && Object.keys(propFromBody).includes(validateKey))
+              || (propOfKey.in.includes('params') && Object.keys(propFromParams).includes(validateKey))
+              || (propOfKey.in.includes('query') && Object.keys(propFromQuery).includes(validateKey))
+            ) {
+                 if (Object.keys(propOfKey).includes('required') )  {
+                    if (propOfKey.required === true) {
+                            requireFlag = true;
+                    }
+                    // } else if (propOfKey.required === false || Object.keys(propFromBody).includes(validateKey) ) {
+                    //         requireFlag = true;
+                    //       }
+                    }
+                if (requireFlag === true) {
+                    if (Object.keys(propOfKey).includes('string')) {
+                        if (propOfKey.string && typeof propFromBody[validateKey] === 'string' ) {//
+                        }
+                        else {
+                            errorchecker (propOfKey, validateKey );
+                        }
+                    }
+                    if (Object.keys(propOfKey).includes('number')) {
+                        if (propOfKey.number === true && typeof propFromBody[validateKey] === 'number' ) {//
+                        }
+                        else {
+                            errorchecker (propOfKey, validateKey );
+                        }
+                    }
+                    // if (Object.keys(propOfKey).includes('isObject')) {
+                    //     if ( !(propFromBody[validateKey]  === true) ) {//
+                            
+                    //     }
+                    //     else {
+                    //         errorchecker (propOfKey, validateKey );
+                    //     }
+                    // }
+                    if (Object.keys(propOfKey).includes('default')) {
+                        if ( (propOfKey.default === '0' && propFromBody[validateKey] === 'skip' )
+                        || (propOfKey.default === '10' && propFromBody[validateKey] === 'limit' )) {//
+                        }
+                        else {
+                            errorchecker (propOfKey, validateKey );
+                        }
+                    }
+                }
+           }
+                else  {
+                    errorchecker (propOfKey, validateKey );
+                }
     }
-    });
-    if (errors.length > 0) {
-        res.status(400).send({ errors});
-    }
+  });
+    if (errorsArray.length > 0) {
+   res.send(errorsArray);
+  }
     else {
-        next();
+          next();
     }
 };
-
-function isNull( obj: any ) {
-    // console.log('obj[0',obj[0]);
-    const a = ( obj === 'undefined' || obj === null );
-    // console.log('result' , a);
-    return a;
-  }
